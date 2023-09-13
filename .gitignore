@@ -1,0 +1,14 @@
+# Project place file
+/Dop.rbxl
+/Dop.rbxlx
+
+# Roblox Studio lock files
+/*.rbxlx.lock
+/*.rbxl.lock
+
+# Wally
+/Packages
+/wally.lock
+
+# Fusion
+/src/ReplicatedStorage/Source/Fusion
