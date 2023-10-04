@@ -1,6 +1,6 @@
 # Project place file
-/Dop.rbxl
-/Dop.rbxlx
+*.rbxl
+*.rbxlx
 
 # Roblox Studio lock files
 /*.rbxlx.lock
