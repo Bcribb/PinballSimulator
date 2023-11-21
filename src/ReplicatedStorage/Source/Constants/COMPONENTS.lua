@@ -15,6 +15,7 @@ local COMPONENTS = {
     TIME = Matter.component("TIME"),
 
     -- ATTRIBUTES
+    SIZE = Matter.component("SIZE"),
     POSITION = Matter.component("POSITION"),
     VELOCITY = Matter.component("VELOCITY"),
 

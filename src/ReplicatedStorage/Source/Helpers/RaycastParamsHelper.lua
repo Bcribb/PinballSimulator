@@ -5,6 +5,7 @@ local Players = game:GetService("Players")
 local RaycastParamsHelper = {}
 
 RaycastParamsHelper.ballRaycastParams = RaycastParams.new()
+RaycastParamsHelper.ballRaycastParams.FilterType = Enum.RaycastFilterType.Exclude
 
 Players.PlayerAdded:Connect(function(_player : Player)
     _player.CharacterAdded:Connect(function(_character : Model)

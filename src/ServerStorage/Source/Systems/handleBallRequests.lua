@@ -15,6 +15,7 @@ local function handleBallRequests(_world)
             COMPONENTS.OWNER({player = ballRequest.player}),
             COMPONENTS.TIME({time = workspace:GetServerTimeNow()}),
             COMPONENTS.BALL({}),
+            COMPONENTS.SIZE({size = Vector3.new(2, 2, 2), radius = 1}),
             COMPONENTS.POSITION({position = ballRequest.position}),
             COMPONENTS.VELOCITY({velocity = velocity})
         )

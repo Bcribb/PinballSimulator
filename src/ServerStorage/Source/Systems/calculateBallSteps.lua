@@ -10,18 +10,19 @@ local StepsHelper = require(ServerStorage.Source.Helpers.StepsHelper)
 local StepsReplicaController = require(ServerStorage.Source.Services.StepsReplicaService)
 
 local function calculateBallSteps(_world)
-    for id, ballComponent, timeComponent, positonComponent, velocityComponent in _world:query(
+    for id, ballComponent, timeComponent, positonComponent, velocityComponent, sizeComponent in _world:query(
         COMPONENTS.BALL,
         COMPONENTS.TIME,
         COMPONENTS.POSITION,
-        COMPONENTS.VELOCITY
+        COMPONENTS.VELOCITY,
+        COMPONENTS.SIZE
     ) do
         local currentTime : number = timeComponent.time
         local position : Vector3 = positonComponent.position
         local velocity : Vector3 = velocityComponent.velocity
 
         while currentTime <= workspace:GetServerTimeNow() + BALL_BEHAVIOUR.LOOK_AHEAD do
-            local step = StepsHelper.calculateSteps(currentTime, position, velocity)
+            local step = StepsHelper.calculateSteps(currentTime, position, velocity, sizeComponent.radius)
             currentTime = step.serverTime
             position = step.position
             velocity = step.velocity
