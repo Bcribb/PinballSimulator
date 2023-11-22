@@ -15,11 +15,12 @@ function StepsHelper.calculateSteps(
     _position : Vector3,
     _velocity : Vector3,
     _radius : number,
+    _acceleration : Vector3,
     _attributes
 )
     local newTime : number = _time + BALL_BEHAVIOUR.TIME_INCREMENT
-    local newPosition : Vector3 = _position + _velocity * BALL_BEHAVIOUR.TIME_INCREMENT
-    local newVelocity : Vector3 = _velocity
+    local newPosition : Vector3 = _position + VectorHelper.displacement(_velocity, _acceleration, BALL_BEHAVIOUR.TIME_INCREMENT)
+    local newVelocity : Vector3 = _velocity + _acceleration * BALL_BEHAVIOUR.TIME_INCREMENT
     local intendedDirection : Vector3 = newPosition - _position
     local raycastResult : RaycastResult = workspace:Spherecast(_position, _radius, intendedDirection, RaycastParamsHelper.ballRaycastParams)
     local attributes = _attributes
@@ -30,13 +31,18 @@ function StepsHelper.calculateSteps(
         
         newTime = _time + timeDelta
         newPosition = _position + intendedDirection.Unit * raycastResult.Distance
-        newVelocity = VectorHelper.reflect(_velocity, raycastResult.Normal)
+        newVelocity = VectorHelper.reflect(
+            _velocity + _acceleration * timeDelta,
+            raycastResult.Normal
+        )
 
         attributes.rollPlaneNormal = raycastResult.Normal
         attributes.rollPlanePoint = newPosition
     end
 
     if attributes.rollPlaneNormal and attributes.rollPlanePoint then
+        print("huh????")
+
         newPosition = VectorHelper.projectPointOntoPlane(newPosition, attributes.rollPlanePoint, attributes.rollPlaneNormal)
         newVelocity = VectorHelper.projectOntoPlane(newVelocity, attributes.rollPlaneNormal)
     end

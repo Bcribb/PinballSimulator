@@ -10,16 +10,18 @@ local StepsHelper = require(ServerStorage.Source.Helpers.StepsHelper)
 local StepsReplicaController = require(ServerStorage.Source.Services.StepsReplicaService)
 
 local function calculateBallSteps(_world)
-    for id, ballComponent, timeComponent, positonComponent, velocityComponent, sizeComponent in _world:query(
+    for id, ballComponent, timeComponent, positonComponent, velocityComponent, sizeComponent, gravityComponent in _world:query(
         COMPONENTS.BALL,
         COMPONENTS.TIME,
         COMPONENTS.POSITION,
         COMPONENTS.VELOCITY,
-        COMPONENTS.SIZE
+        COMPONENTS.SIZE,
+        COMPONENTS.GRAVITY
     ) do
         local currentTime : number = timeComponent.time
         local position : Vector3 = positonComponent.position
         local velocity : Vector3 = velocityComponent.velocity
+        local acceleration : Vector3 = gravityComponent.gravity
 
         local attributes = {}
         local rollComponent = _world:get(id, COMPONENTS.ROLL)
@@ -30,7 +32,7 @@ local function calculateBallSteps(_world)
         end
 
         while currentTime <= workspace:GetServerTimeNow() + BALL_BEHAVIOUR.LOOK_AHEAD do
-            local step, attributes = StepsHelper.calculateSteps(currentTime, position, velocity, sizeComponent.radius, attributes)
+            local step, attributes = StepsHelper.calculateSteps(currentTime, position, velocity, sizeComponent.radius, acceleration, attributes)
             currentTime = step.serverTime
             position = step.position
             velocity = step.velocity
@@ -49,13 +51,10 @@ local function calculateBallSteps(_world)
             )
 
             if attributes.rollPlaneNormal then
-                rollComponent = rollComponent or COMPONENTS.ROLL({})
-                rollComponent:patch({
+                _world:insert(id, COMPONENTS.ROLL({
                     planeNormal = attributes.rollPlaneNormal,
                     planePoint = attributes.rollPlanePoint
-                })
-
-                _world:insert(id, rollComponent)
+                }))
             end
 
             StepsReplicaController:insertBallStep(id, step)

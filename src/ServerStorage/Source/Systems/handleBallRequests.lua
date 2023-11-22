@@ -17,7 +17,8 @@ local function handleBallRequests(_world)
             COMPONENTS.BALL({}),
             COMPONENTS.SIZE({size = Vector3.new(2, 2, 2), radius = 1}),
             COMPONENTS.POSITION({position = ballRequest.position}),
-            COMPONENTS.VELOCITY({velocity = velocity})
+            COMPONENTS.VELOCITY({velocity = velocity}),
+            COMPONENTS.GRAVITY({gravity = Vector3.new(0, -10, 0)})
         )
 
         local step = {
