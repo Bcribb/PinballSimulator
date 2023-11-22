@@ -18,6 +18,7 @@ local COMPONENTS = {
     SIZE = Matter.component("SIZE"),
     POSITION = Matter.component("POSITION"),
     VELOCITY = Matter.component("VELOCITY"),
+    ROLL = Matter.component("PLANE_NORMAL"),
 
     -- INSTANCES
     MODEL = Matter.component("MODEL")

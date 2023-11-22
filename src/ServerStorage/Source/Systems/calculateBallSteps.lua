@@ -21,8 +21,16 @@ local function calculateBallSteps(_world)
         local position : Vector3 = positonComponent.position
         local velocity : Vector3 = velocityComponent.velocity
 
+        local attributes = {}
+        local rollComponent = _world:get(id, COMPONENTS.ROLL)
+
+        if rollComponent then
+            attributes.rollPlaneNormal = rollComponent.planeNormal
+            attributes.rollPlanePoint = rollComponent.planePoint
+        end
+
         while currentTime <= workspace:GetServerTimeNow() + BALL_BEHAVIOUR.LOOK_AHEAD do
-            local step = StepsHelper.calculateSteps(currentTime, position, velocity, sizeComponent.radius)
+            local step, attributes = StepsHelper.calculateSteps(currentTime, position, velocity, sizeComponent.radius, attributes)
             currentTime = step.serverTime
             position = step.position
             velocity = step.velocity
@@ -39,6 +47,16 @@ local function calculateBallSteps(_world)
                     velocity = velocity
                 })
             )
+
+            if attributes.rollPlaneNormal then
+                rollComponent = rollComponent or COMPONENTS.ROLL({})
+                rollComponent:patch({
+                    planeNormal = attributes.rollPlaneNormal,
+                    planePoint = attributes.rollPlanePoint
+                })
+
+                _world:insert(id, rollComponent)
+            end
 
             StepsReplicaController:insertBallStep(id, step)
         end
