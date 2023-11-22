@@ -10,6 +10,10 @@ local VectorHelper = require(ReplicatedStorage.Source.Helpers.VectorHelper)
 
 local StepsHelper = {}
 
+function shouldBounce()
+    return true
+end
+
 function StepsHelper.calculateSteps(
     _time : number,
     _position : Vector3,
@@ -31,23 +35,24 @@ function StepsHelper.calculateSteps(
         
         newTime = _time + timeDelta
         newPosition = _position + intendedDirection.Unit * raycastResult.Distance
-        newVelocity = VectorHelper.reflect(
-            _velocity + _acceleration * timeDelta,
-            raycastResult.Normal
-        )
 
-        attributes.rollPlaneNormal = raycastResult.Normal
-        attributes.rollPlanePoint = newPosition
+        if shouldBounce() then
+            newVelocity = VectorHelper.reflect(
+                _velocity + _acceleration * timeDelta,
+                raycastResult.Normal
+            )
+        else
+            attributes.rollPlaneNormal = raycastResult.Normal
+            attributes.rollPlanePoint = newPosition
+        end
     end
 
     if attributes.rollPlaneNormal and attributes.rollPlanePoint then
-        print("huh????")
-
         newPosition = VectorHelper.projectPointOntoPlane(newPosition, attributes.rollPlanePoint, attributes.rollPlaneNormal)
         newVelocity = VectorHelper.projectOntoPlane(newVelocity, attributes.rollPlaneNormal)
     end
 
-    DebugHelper.createDirectionIndicator(_position, _velocity.Unit, _velocity.Magnitude * BALL_BEHAVIOUR.TIME_INCREMENT, workspace)
+    DebugHelper.createDirectionIndicator(_position, _velocity.Unit, (newPosition - _position).Magnitude, workspace)
 
     local step = {
         serverTime = newTime,
