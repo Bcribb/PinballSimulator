@@ -57,6 +57,8 @@ local function calculateBallSteps(_world)
                 }))
             end
 
+            step.velocity = nil
+
             StepsReplicaController:insertBallStep(id, step)
         end
     end

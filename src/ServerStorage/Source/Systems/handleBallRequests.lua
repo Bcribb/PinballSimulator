@@ -9,7 +9,7 @@ local StepsReplicaSerivce = require(ServerStorage.Source.Services.StepsReplicaSe
 
 local function handleBallRequests(_world)
     for id, ballRequest in _world:query(COMPONENTS.BALL_REQUEST) do
-        local velocity : Vector3 = ballRequest.direction * 10
+        local velocity : Vector3 = ballRequest.direction * 30
 
         local ballId : number = _world:spawn(
             COMPONENTS.OWNER({player = ballRequest.player}),

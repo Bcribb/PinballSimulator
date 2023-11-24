@@ -3,6 +3,7 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local BALL_BEHAVIOUR = require(ReplicatedStorage.Source.Constants.BALL_BEHAVIOUR)
+local GLOBAL = require(ReplicatedStorage.Source.Constants.GLOBAL)
 
 local DebugHelper = require(ReplicatedStorage.Source.Helpers.DebugHelper)
 local RaycastParamsHelper = require(ReplicatedStorage.Source.Helpers.RaycastParamsHelper)
@@ -52,7 +53,9 @@ function StepsHelper.calculateSteps(
         newVelocity = VectorHelper.projectOntoPlane(newVelocity, attributes.rollPlaneNormal)
     end
 
-    DebugHelper.createDirectionIndicator(_position, _velocity.Unit, (newPosition - _position).Magnitude, workspace)
+    if GLOBAL.DEBUG then
+        DebugHelper.createDirectionIndicator(_position, _velocity.Unit, (newPosition - _position).Magnitude, workspace)
+    end
 
     local step = {
         serverTime = newTime,
