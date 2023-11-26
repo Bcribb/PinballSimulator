@@ -11,59 +11,51 @@ local VectorHelper = require(ReplicatedStorage.Source.Helpers.VectorHelper)
 
 local StepsHelper = {}
 
-function shouldBounce()
-    return true
-end
-
 function StepsHelper.calculateSteps(
-    _time : number,
-    _position : Vector3,
-    _velocity : Vector3,
-    _radius : number,
-    _acceleration : Vector3,
-    _attributes
+    _step : {
+        serverTime : number,
+        position : Vector3,
+        velocity : Vector3,
+        acceleration : Vector3
+    },
+    _rollComponent
 )
-    local newTime : number = _time + BALL_BEHAVIOUR.TIME_INCREMENT
-    local newPosition : Vector3 = _position + VectorHelper.displacement(_velocity, _acceleration, BALL_BEHAVIOUR.TIME_INCREMENT)
-    local newVelocity : Vector3 = _velocity + _acceleration * BALL_BEHAVIOUR.TIME_INCREMENT
-    local intendedDirection : Vector3 = newPosition - _position
-    local raycastResult : RaycastResult = workspace:Spherecast(_position, _radius, intendedDirection, RaycastParamsHelper.ballRaycastParams)
-    local attributes = _attributes
+    local newTime : number = _step.serverTime + BALL_BEHAVIOUR.TIME_INCREMENT
+    local newPosition : Vector3 = _step.position + VectorHelper.displacement(_step.velocity, _step.acceleration, BALL_BEHAVIOUR.TIME_INCREMENT)
+    local newVelocity : Vector3 = _step.velocity + _step.acceleration * BALL_BEHAVIOUR.TIME_INCREMENT
+    local newAcceleration : Vector3 = _step.acceleration
+
+    -- Apply roll constraints if applicable
+    if _rollComponent then
+        newPosition = VectorHelper.projectPointOntoPlane(newPosition, _rollComponent.planePoint, _rollComponent.planeNormal)
+        newVelocity = VectorHelper.projectOntoPlane(newVelocity, _rollComponent.planeNormal)
+    end
+
+    local intendedDirection : Vector3 = newPosition - _step.position
+    local raycastResult : RaycastResult = workspace:Spherecast(_step.position, 1, intendedDirection, RaycastParamsHelper.ballRaycastParams)    
 
     if raycastResult then
         local distancePortion : number = raycastResult.Distance / intendedDirection.Magnitude
-        local timeDelta : number = BALL_BEHAVIOUR.TIME_INCREMENT * distancePortion
-        
-        newTime = _time + timeDelta
-        newPosition = _position + intendedDirection.Unit * raycastResult.Distance
 
-        if shouldBounce() then
-            newVelocity = VectorHelper.reflect(
-                _velocity + _acceleration * timeDelta,
-                raycastResult.Normal
-            )
-        else
-            attributes.rollPlaneNormal = raycastResult.Normal
-            attributes.rollPlanePoint = newPosition
-        end
-    end
-
-    if attributes.rollPlaneNormal and attributes.rollPlanePoint then
-        newPosition = VectorHelper.projectPointOntoPlane(newPosition, attributes.rollPlanePoint, attributes.rollPlaneNormal)
-        newVelocity = VectorHelper.projectOntoPlane(newVelocity, attributes.rollPlaneNormal)
+        newTime = _step.serverTime + (BALL_BEHAVIOUR.TIME_INCREMENT * distancePortion)
+        newPosition = _step.position + (intendedDirection.Unit * raycastResult.Distance)
+        newVelocity = _step.velocity + _step.acceleration * BALL_BEHAVIOUR.TIME_INCREMENT * distancePortion
+        newAcceleration = _step.acceleration
     end
 
     if GLOBAL.DEBUG then
-        DebugHelper.createDirectionIndicator(_position, _velocity.Unit, (newPosition - _position).Magnitude, workspace)
+        local actualDirection : Vector3 = newPosition - _step.position
+        DebugHelper.createDirectionIndicator(_step.position, actualDirection.Unit, actualDirection.Magnitude, workspace)
     end
 
     local step = {
         serverTime = newTime,
         position = newPosition,
-        velocity = newVelocity
+        velocity = newVelocity,
+        acceleration = newAcceleration
     }
 
-    return step, attributes
+    return step, raycastResult
 end
 
 return StepsHelper

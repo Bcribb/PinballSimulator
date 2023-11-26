@@ -7,10 +7,11 @@ local COMPONENTS = require(ReplicatedStorage.Source.Constants.COMPONENTS)
 local BALL_BEHAVIOUR = require(ReplicatedStorage.Source.Constants.BALL_BEHAVIOUR)
 
 local StepsHelper = require(ServerStorage.Source.Helpers.StepsHelper)
+local CollisionsHelper = require(ServerStorage.Source.Helpers.CollisionsHelper)
 local StepsReplicaController = require(ServerStorage.Source.Services.StepsReplicaService)
 
 local function calculateBallSteps(_world)
-    for id, ballComponent, timeComponent, positonComponent, velocityComponent, sizeComponent, gravityComponent in _world:query(
+    for id, ballComponent, timeComponent, positionComponent, velocityComponent, sizeComponent, gravityComponent in _world:query(
         COMPONENTS.BALL,
         COMPONENTS.TIME,
         COMPONENTS.POSITION,
@@ -18,46 +19,46 @@ local function calculateBallSteps(_world)
         COMPONENTS.SIZE,
         COMPONENTS.GRAVITY
     ) do
-        local currentTime : number = timeComponent.time
-        local position : Vector3 = positonComponent.position
-        local velocity : Vector3 = velocityComponent.velocity
-        local acceleration : Vector3 = gravityComponent.gravity
+        -- Construct the step
+        local step = {
+            serverTime = timeComponent.time,
+            position = positionComponent.position,
+            velocity = velocityComponent.velocity,
+            acceleration = gravityComponent.gravity
+        }
 
-        local attributes = {}
-        local rollComponent = _world:get(id, COMPONENTS.ROLL)
+        -- Think ahead
+        while step.serverTime <= workspace:GetServerTimeNow() + BALL_BEHAVIOUR.LOOK_AHEAD do
+            local raycastResult : RaycastResult
+            local rollComponent = _world:get(id, COMPONENTS.ROLL)
 
-        if rollComponent then
-            attributes.rollPlaneNormal = rollComponent.planeNormal
-            attributes.rollPlanePoint = rollComponent.planePoint
-        end
+            -- Calculate the basics of the step, i.e - move the ball and update velocity etc
+            step, raycastResult = StepsHelper.calculateSteps(step, rollComponent)
 
-        while currentTime <= workspace:GetServerTimeNow() + BALL_BEHAVIOUR.LOOK_AHEAD do
-            local step, attributes = StepsHelper.calculateSteps(currentTime, position, velocity, sizeComponent.radius, acceleration, attributes)
-            currentTime = step.serverTime
-            position = step.position
-            velocity = step.velocity
+            -- If we've hit anything, then handle that collision
+            step = CollisionsHelper.handleCollisions(step, raycastResult, id)
 
             _world:insert(
                 id,
                 timeComponent:patch({
-                    time = currentTime
+                    time = step.serverTime
                 }),
-                positonComponent:patch({
-                    position = position
+                positionComponent:patch({
+                    position = step.position
                 }),
                 velocityComponent:patch({
-                    velocity = velocity
+                    velocity = step.velocity
                 })
             )
 
+            --[[
             if attributes.rollPlaneNormal then
                 _world:insert(id, COMPONENTS.ROLL({
                     planeNormal = attributes.rollPlaneNormal,
                     planePoint = attributes.rollPlanePoint
                 }))
             end
-
-            step.velocity = nil
+            ]]
 
             StepsReplicaController:insertBallStep(id, step)
         end

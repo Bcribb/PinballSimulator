@@ -18,9 +18,12 @@ local COMPONENTS = {
     SIZE = Matter.component("SIZE"),
     POSITION = Matter.component("POSITION"),
     VELOCITY = Matter.component("VELOCITY"),
-    ROLL = Matter.component("PLANE_NORMAL"),
     GRAVITY = Matter.component("GRAVITY"),
     ORIGIN = Matter.component("ORIGIN"),
+
+    -- MODIFIERS
+    ROLL = Matter.component("PLANE_NORMAL"),
+    
 
     -- BEHAVIOUR
     LINEAR_OSCILLATION = Matter.component("LINEAR_OSCILLATION"),

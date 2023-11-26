@@ -1,7 +1,7 @@
 --!strict
 
 local GLOBAL = {
-    DEBUG = true,
+    DEBUG = false,
     LOOK_AHEAD = 1
 }
 
