@@ -50,9 +50,21 @@ local function onLinearOscillatorAdded(_model : Model)
     )
 end
 
+local function onInteractableAdded(_tagged : Model)
+    if _tagged:GetAttribute(INTERACTABLES.INTERACTABLE_TYPE_ATTRIBUTE) then
+        if _tagged:GetAttribute(INTERACTABLES.INTERACTABLE_TYPE_ATTRIBUTE) == INTERACTABLES.TYPES.BUMPER then
+            _tagged:SetAttribute(INTERACTABLES.BUMPER.ORIGINAL_SIZE_ATTRIBUTE, _tagged.Size)
+        end
+    end
+end
+
 for _, tagged in CollectionService:GetTagged(INTERACTABLES.TYPES.LINEAR_OSCILLATOR) do
     onLinearOscillatorAdded(tagged)
 end
 CollectionService:GetInstanceAddedSignal(INTERACTABLES.TYPES.LINEAR_OSCILLATOR):Connect(onLinearOscillatorAdded)
+
+for _, tagged in CollectionService:GetTagged(INTERACTABLES.INTERACTABLE_TAG) do
+    onInteractableAdded(tagged)
+end
 
 return InteractableServiceController

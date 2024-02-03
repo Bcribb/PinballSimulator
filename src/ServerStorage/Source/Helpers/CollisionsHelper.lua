@@ -55,6 +55,8 @@ function CollisionsHelper.handleCollisions(
                 step.velocity = VectorHelper.reflect(step.velocity, _raycastResult.Normal)
             end
         end
+
+        step.collides = _raycastResult.Instance
     end
 
     return step

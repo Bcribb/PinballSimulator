@@ -10,7 +10,7 @@ local CharacterHelper = {
 local function onCharacterAdded(_character : Model)
 end
 
-function CharacterHelper.getCharacter(_player : Player, _wait : boolean)
+function CharacterHelper.getCharacter(_player : Player, _wait : boolean) : Model?
     local player : Player = if _player then _player else Players.LocalPlayer
 
     local character : Model = player.Character or if _wait then player.CharacterAdded:Wait() else nil
@@ -18,7 +18,7 @@ function CharacterHelper.getCharacter(_player : Player, _wait : boolean)
     return character
 end
 
-function CharacterHelper.getHrp(_player : Player, _wait : boolean)
+function CharacterHelper.getHrp(_player : Player, _wait : boolean) : Part?
     local player : Player = if _player then _player else Players.LocalPlayer
 
     local character : Model = CharacterHelper.getCharacter(player, _wait)
@@ -31,7 +31,7 @@ function CharacterHelper.getHrp(_player : Player, _wait : boolean)
     return hrp
 end
 
-function CharacterHelper.getHumanoid(_player : Player, _wait : boolean)
+function CharacterHelper.getHumanoid(_player : Player, _wait : boolean) : Humanoid?
     local player : Player = if _player then _player else Players.LocalPlayer
 
     local character : Model = CharacterHelper.getCharacter(player, _wait)
@@ -44,7 +44,7 @@ function CharacterHelper.getHumanoid(_player : Player, _wait : boolean)
     return humanoid
 end
 
-function CharacterHelper.getAnimator(_player : Player, _wait : boolean)
+function CharacterHelper.getAnimator(_player : Player, _wait : boolean) : Animator?
     local player : Player = if _player then _player else Players.LocalPlayer
 
     local humanoid : Humanoid = CharacterHelper.getHumanoid(player, _wait)
@@ -57,7 +57,7 @@ function CharacterHelper.getAnimator(_player : Player, _wait : boolean)
     return animator
 end
 
-function CharacterHelper.getMouse(_player : Player)
+function CharacterHelper.getMouse(_player : Player) : Mouse?
     local player : Player = if _player then _player else Players.LocalPlayer
 
     return player:GetMouse()

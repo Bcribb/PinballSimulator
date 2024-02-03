@@ -23,7 +23,6 @@ local COMPONENTS = {
 
     -- MODIFIERS
     ROLL = Matter.component("PLANE_NORMAL"),
-    
 
     -- BEHAVIOUR
     LINEAR_OSCILLATION = Matter.component("LINEAR_OSCILLATION"),

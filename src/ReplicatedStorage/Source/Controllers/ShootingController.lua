@@ -9,6 +9,7 @@ local COMPONENTS = require(ReplicatedStorage.Source.Constants.COMPONENTS)
 
 local WorldServiceController = require(ReplicatedStorage.Source.SharedServiceControllers.WorldServiceController)
 local CharacterHelper = require(ReplicatedStorage.Source.Helpers.CharacterHelper)
+local AnimationController = require(ReplicatedStorage.Source.Controllers.AnimationController)
 
 local clientComm = ClientComm.new(ReplicatedStorage, true, "BallService")
 local comm = clientComm:BuildObject()
@@ -23,6 +24,7 @@ local function handleButtonDown(_actionName : string, _inputState : Enum.UserInp
         local shotDirection : Vector3 = (mouseHitPosition - characterPosition).Unit
 
         comm:shoot(serverTime, characterPosition, shotDirection)
+        AnimationController:play()
     end
 end
 
