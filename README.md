@@ -1,6 +1,6 @@
 # Pinball simulator
 
-This is an in development attempt to create a simple, 3D, networked ball simulation within Roblox.
+This is an in development attempt to create a simple, 3D, networked ball simulation within Roblox. I'm attempting this with use of the Matter entity component system (ECS) for Roblox [Matter](https://eryn.io/matter/)
 
 Balls are created on the client side and simulated on the server. The location of balls is replicated to all clients simulatenously.
 
